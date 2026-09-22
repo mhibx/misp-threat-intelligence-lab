@@ -50,8 +50,6 @@ Focus:
 - Wazuh Event ID 4625
 - Evidence-based assessment
 
-[View Case →]
-
 ## Lab Environment
 
 MISP
