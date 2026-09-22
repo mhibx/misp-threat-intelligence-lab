@@ -64,7 +64,7 @@ The Event Report records the CISA advisory as the source for the case.
 
 ## 4. MISP Event
 
-### Event information
+### Event Information
 
 | Field | Value |
 |---|---|
@@ -83,15 +83,19 @@ The Event is associated with the MISP Galaxy cluster:
 
 - **APT29**
 
+![MISP Event with APT29 Galaxy](screenshots/01-misp-event-galaxies.png)
+
 This association represents the threat intelligence subject of the Event. It does **not** indicate that APT29 activity was observed in the lab.
 
-### MITRE ATT&CK context
+### MITRE ATT&CK Context
 
 The Event contains the following ATT&CK technique clusters:
 
 - **T1110.001 — Password Guessing**
 - **T1110.003 — Password Spraying**
 - **T1090.002 — External Proxy**
+
+![MISP Event with ATT&CK Technique Clusters](screenshots/04-misp-event-final.png)
 
 These techniques provide behavioral context for the threat intelligence and form the basis for the hunting hypothesis.
 
@@ -100,6 +104,10 @@ These techniques provide behavioral context for the threat intelligence and form
 The Event contains an Event Report:
 
 **CISA AA24-057A — SVR Cyber Actors Adapt Tactics for Initial Cloud Access**
+
+![MISP Event Report](screenshots/02-misp-event-report.png)
+
+![MISP Event Report Detail](screenshots/03-misp-event-report-detail.png)
 
 The report records the source, publication date, summary, relevant ATT&CK context, and an explicit distinction between external CTI and activity actually observed in the lab.
 
@@ -135,7 +143,7 @@ The presence of APT29 intelligence in MISP does **not** mean that APT29 is prese
 
 ## 7. Wazuh Investigation
 
-### Data source
+### Data Source
 
 The investigation used Windows Security Event ID:
 
@@ -145,20 +153,24 @@ The investigation used Windows Security Event ID:
 
 The telemetry was collected from the Windows X390 agent through Wazuh.
 
-Observed Wazuh context included:
+### Observed Wazuh Context
 
-- Agent name: `X390`
-- Agent ID: `001`
-- Agent IP: `192.168.1.4`
-- Windows Event ID: `4625`
-- Authentication package: `Negotiate`
-- Logon Type: `2`
-- Source IP: `127.0.0.1`
-- Target account: `X390$`
-- Process: `C:\Windows\System32\svchost.exe`
-- Wazuh Rule ID: `60122`
-- Rule description: `Logon Failure - Unknown user or bad password`
-- Rule fired count in the displayed result: `3`
+| Field | Observed value |
+|---|---|
+| Agent name | `X390` |
+| Agent ID | `001` |
+| Agent IP | `192.168.1.4` |
+| Windows Event ID | `4625` |
+| Authentication package | `Negotiate` |
+| Logon Type | `2` |
+| Source IP | `127.0.0.1` |
+| Target account | `X390$` |
+| Process | `C:\Windows\System32\svchost.exe` |
+| Wazuh Rule ID | `60122` |
+| Rule description | `Logon Failure - Unknown user or bad password` |
+| Rule fired count in displayed result | `3` |
+
+### Observed Events
 
 Three Event ID 4625 records were observed in Wazuh around:
 
@@ -167,6 +179,20 @@ Three Event ID 4625 records were observed in Wazuh around:
 2026-09-22 08:45:09
 2026-09-22 08:45:12
 ```
+
+![Wazuh Event ID 4625 Results](screenshots/05-wazuh-4625-results.png)
+
+The detailed event context was reviewed in Wazuh:
+
+![Wazuh Event ID 4625 Details](screenshots/06-wazuh-4625-details-1.png)
+
+Additional event fields included the Windows Security channel, Event ID 4625, event record information, and the event message:
+
+![Wazuh Event ID 4625 Event Fields](screenshots/07-wazuh-4625-details-2.png)
+
+The event was processed by Wazuh Rule `60122`:
+
+![Wazuh Rule 60122](screenshots/08-wazuh-rule-60122.png)
 
 ---
 
@@ -181,9 +207,7 @@ However, the available evidence does **not** establish:
 - APT29 activity
 - External credential attack activity
 
-Several contextual details are important.
-
-### Local source
+### Local Source
 
 The observed source address was:
 
@@ -193,7 +217,7 @@ The observed source address was:
 
 This indicates local activity on the Windows workstation rather than an observed remote source.
 
-### Target account
+### Target Account
 
 The displayed target account was:
 
@@ -203,7 +227,7 @@ X390$
 
 This is a workstation computer account rather than evidence of an attacker targeting multiple user accounts.
 
-### Number of events
+### Number of Events
 
 Three authentication failures are sufficient to demonstrate authentication-failure telemetry, but they are not by themselves enough to establish a password-guessing or password-spraying pattern.
 
@@ -229,7 +253,7 @@ The captured telemetry does not provide sufficient evidence for either classific
 
 There was also no evidence in this exercise that the observed activity was caused by APT29.
 
-The correct analytical conclusion is therefore:
+The analytical conclusion is:
 
 ```text
 CTI hypothesis
@@ -249,21 +273,21 @@ This is an example of CTI being used as an **investigative hypothesis**, rather 
 
 ## 10. Key Lessons Learned
 
-### 10.1 MISP is not a detection sensor
+### 10.1 MISP is not a Detection Sensor
 
 MISP stores and contextualizes threat intelligence. It does not independently prove that a threat actor is active in the environment.
 
-### 10.2 Galaxy context is not attribution evidence
+### 10.2 Galaxy Context is Not Attribution Evidence
 
 Attaching the APT29 Galaxy cluster to an Event means the Event concerns intelligence about APT29. It does not mean that an alert involving a related technique is automatically attributable to APT29.
 
-### 10.3 ATT&CK technique ≠ automatic detection
+### 10.3 ATT&CK Technique ≠ Automatic Detection
 
 Seeing Event ID 4625 does not automatically mean T1110.001 or T1110.003 occurred.
 
 The analyst must examine the surrounding behavior and context.
 
-### 10.4 Threat intelligence can produce negative hunting results
+### 10.4 Threat Intelligence Can Produce Negative Hunting Results
 
 A valid hunting outcome can be:
 
@@ -271,7 +295,7 @@ A valid hunting outcome can be:
 
 The absence of supporting evidence is itself useful investigative information.
 
-### 10.5 CTI and SIEM have complementary roles
+### 10.5 CTI and SIEM Have Complementary Roles
 
 ```text
 MISP
@@ -327,4 +351,4 @@ The main lesson is that **threat intelligence should guide investigation, while 
 
 ## Evidence
 
-The `screenshots/` directory contains the relevant MISP and Wazuh screenshots captured during the exercise.
+All relevant screenshots are embedded throughout this case report and are also retained in the `screenshots/` directory.
